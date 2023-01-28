@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.2/shaka-player.ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.2/controls.min.css">
+    <style>
+      body{
+        background-color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <center>
+      <h1 style="color: #ddd; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Pranusha & Sapna Fundamental Multimedia</h1>
+      <div data-shaka-player-container style="max-width:40em"
+         data-shaka-player-cast-receiver-id="8D8C71A7">
+      <video data-shaka-player id="video" style="width:100%;height:100%" autoplay muted></video>
+  </center>
+  <script>
+    const manifestUri =
+        './h264_v2/manifest.mpd';
+
+    async function init() {
+      const video = document.getElementById('video');
+      const ui = video['ui'];
+      const controls = ui.getControls();
+      const player = controls.getPlayer();
+      const config = { 'controlPanelElements': ['play_pause', 'pause', 'rewind', 'fast_forward', 'time_and_duration', 'spacer', 'mute', 'volume', 'quality', 'fullscreen'] }
+      ui.configure(config);
+
+      window.player = player;
+      window.ui = ui;
+
+      player.addEventListener('error', onPlayerErrorEvent);
+      controls.addEventListener('error', onUIErrorEvent);
+
+      try {
+        await player.load(manifestUri);
+        console.log('The video has now been loaded!');
+      } catch (error) {
+        onPlayerError(error);
+      }
+    }
+
+    function onPlayerErrorEvent(errorEvent) {
+      onPlayerError(event.detail);
+    }
+
+    function onPlayerError(error) {
+      console.error('Error code', error.code, 'object', error);
+    }
+
+    function onUIErrorEvent(errorEvent) {
+      onPlayerError(event.detail);
+    }
+
+    function initFailed(errorEvent) {
+      console.error('Unable to load the UI library!');
+    }
+
+    document.addEventListener('shaka-ui-loaded', init);
+    document.addEventListener('shaka-ui-load-failed', initFailed);
+    </script>
+  
+</body>
+</html>
